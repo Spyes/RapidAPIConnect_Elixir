@@ -1,0 +1,2 @@
+defmodule RapidApi do
+end
