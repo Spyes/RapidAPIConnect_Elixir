@@ -35,9 +35,9 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
 Connecting to RapidAPI is very simple. The following code makes a call to the getPictureOfTheDay function of the NasaAPI package, passing it the date parameter:
 
-    ```elixir
-    RapidAPI.call("NasaAPI", "getPictureOfTheDay", %{date: "1997-07-01"})
-    ```
+```elixir
+RapidAPI.call("NasaAPI", "getPictureOfTheDay", %{date: "1997-07-01"})
+```
     
 This will return a Map of the API response.
 
