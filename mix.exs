@@ -4,7 +4,9 @@ defmodule RapidApi.Mixfile do
   def project do
     [app: :rapid_api,
      version: "0.1.0",
+     description: "RapidAPI SDK",
      elixir: "~> 1.3",
+     package: package(),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps()]
@@ -14,7 +16,7 @@ defmodule RapidApi.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:httpotion]]
+    [applications: [:httpotion, :poison]]
   end
 
   # Dependencies can be Hex packages:
@@ -28,7 +30,16 @@ defmodule RapidApi.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:httpotion, "~> 3.0.2"}
+      {:httpotion, "~> 3.0.2"},
+      {:poison, "~> 3.0"}
+    ]
+  end
+
+  defp package do
+    [
+      licenses: ["MIT"],
+      maintainers: [ "Lewis Nitzberg" ],
+      links: %{ "GitHub" => "https://github.com/Spyes/RapidAPISDK_Elixir" }
     ]
   end
 end
