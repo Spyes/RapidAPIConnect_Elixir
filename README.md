@@ -24,7 +24,7 @@ Easily connect to RapidAPI blocks from your Elixir application.
   
       ```elixir
       config :rapid_api,
-        base_url: "https://rapidapi.io/connect", # optional - defaults to this URL
+        base_url: "https://rapidapi.io", # optional - defaults to this URL
         token: "your-rapid-api-token",
         project: "your-rapid-api-project"
       ```
