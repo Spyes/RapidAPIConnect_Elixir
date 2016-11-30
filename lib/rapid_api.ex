@@ -1,15 +1,27 @@
 defmodule RapidApi do
+
+  @doc """
+  Calls the specified package and base, passing all arguments provided.
+
+  Returns a Map of the payload.
+  """
+  @spec call(String.t, String.t, map()) :: map()
   def call(pack, base, args \\ %{}) do
     { base_url, token, project } = get_vars
     { :ok, encoded } = Poison.encode(args)
-    req = [
+
+    params = [
       body: encoded,
-      basic_auth: {project, token},
-      headers: ["User-Agent": "RapidAPIConnect_Elixir", "Content-Type": "application/json"],
+      basic_auth: { project, token },
+      headers: [
+        "User-Agent": "RapidAPIConnect_Elixir",
+        "Content-Type": "application/json"
+      ]
     ]
+
     request = 
       base_url <> "/#{pack}/#{base}"
-      |> HTTPotion.post!(req)
+      |> HTTPotion.post!(params)
 
     { :ok, parsed } = Poison.decode(request.body)
     parsed["payload"]
@@ -27,4 +39,5 @@ defmodule RapidApi do
     end
     { base_url, token, project }
   end
+
 end
