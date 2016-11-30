@@ -6,27 +6,16 @@ defmodule RapidApi do
   Returns a Map of the payload.
   """
   @spec call(String.t, String.t, map()) :: map()
-  def call(pack, base, args \\ %{}) do
-    { base_url, token, project } = get_vars
-    { :ok, encoded } = Poison.encode(args)
-
-    params = [
-      body: encoded,
-      basic_auth: { project, token },
-      headers: [
-        "User-Agent": "RapidAPIConnect_Elixir",
-        "Content-Type": "application/json"
-      ]
-    ]
-
-    request = 
-      base_url <> "/#{pack}/#{base}"
-      |> HTTPotion.post!(params)
-
-    { :ok, parsed } = Poison.decode(request.body)
-    parsed["payload"]
+  def call(pack, base, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_map(args) do
+    base_url = Application.get_env(:rapid_api, :base_url, "https://rapidapi.io/connect")
+    base_url <> "/#{pack}/#{base}"
+    |> HTTPotion.post!(get_params(args))
+    |> Map.get(:body)
+    |> Poison.decode()
+    |> ok
+    |> Map.get("payload")
   end
-
+  
   defp get_vars do
     base_url = Application.get_env(:rapid_api, :base_url, "https://rapidapi.io/connect")
     case token = Application.get_env(:rapid_api, :token) do
@@ -39,5 +28,20 @@ defmodule RapidApi do
     end
     { base_url, token, project }
   end
+
+  defp get_params(args) do
+    { _base_url, token, project } = get_vars
+    { :ok, encoded } = Poison.encode(args)
+    [
+      body: encoded,
+      basic_auth: { project, token },
+      headers: [
+        "User-Agent": "RapidAPIConnect_Elixir",
+        "Content-Type": "application/json"
+      ]
+    ]
+  end
+  
+  defp ok({:ok, resp}), do: resp
 
 end
