@@ -10,9 +10,7 @@ defmodule RapidApi do
     base_url() <> "/connect/#{pack}/#{base}"
     |> HTTPotion.post!(get_params(args))
     |> Map.get(:body)
-    |> Poison.decode
-    |> ok
-    |> Map.get("payload")
+    |> decode_response
   end
 
   @doc """
@@ -22,25 +20,25 @@ defmodule RapidApi do
   """
   @spec call_async(String.t, String.t, pid(), map()) :: atom()
   def call_async(pack, base, receiver_pid, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_pid(receiver_pid) and is_map(args) do
-    
     base_url() <> "/connect/#{pack}/#{base}"
     |> HTTPotion.post!(get_params(args, receiver_pid))
-
     :ok
   end
 
   def async_worker(receiver_pid) when is_pid(receiver_pid) do
     receive do
       %HTTPotion.AsyncChunk{chunk: data} ->
-        decoded = 
-          data
-          |> Poison.decode
-          |> ok
-          |> Map.get("payload")
-        send(receiver_pid, decoded)
+        send(receiver_pid, decode_response(data))
     end
   end
 
+  defp decode_response(data) do
+    data
+    |> Poison.decode
+    |> ok
+    |> Map.get("payload")    
+  end
+  
   defp get_vars do
     case token = Application.get_env(:rapid_api, :token) do
       nil -> raise "No API token defined in config"
