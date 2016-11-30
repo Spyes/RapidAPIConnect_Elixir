@@ -14,7 +14,8 @@ defmodule RapidApi do
   end
 
   @doc """
-  Creates an asynchronous call to the specified package and base, passing all arguments provided. When an answer is returned, sends the payload to the specified receiver pid.
+  Creates an asynchronous call to the specified package and base, passing all arguments provided.
+  When an answer is returned, sends the payload to the specified receiver pid.
 
   Returns :ok
   """
