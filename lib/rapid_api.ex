@@ -1,7 +1,7 @@
 defmodule RapidApi do
 
   @doc """
-  Calls the specified package and base, passing all arguments provided.
+  Creates a synchronous call to the specified package and base, passing all arguments provided.
 
   Returns a Map of the payload.
   """
@@ -10,38 +10,37 @@ defmodule RapidApi do
     base_url() <> "/connect/#{pack}/#{base}"
     |> HTTPotion.post!(get_params(args))
     |> Map.get(:body)
-    |> Poison.decode()
+    |> Poison.decode
     |> ok
     |> Map.get("payload")
   end
 
-  def call_async(pack, base, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_map(args) do
-    {:ok, worker_pid} =
-      base_url()
-      |> HTTPotion.spawn_worker_process()
+  @doc """
+  Creates an asynchronous call to the specified package and base, passing all arguments provided. When an answer is returned, sends the payload to the specified receiver pid.
 
-    {token, project} = get_vars
-    {:ok, encoded} = Poison.encode(args)
-    params = [
-      body: encoded,
-      direct: worker_pid,
-      stream_to: self,
-      basic_auth: {project, token},
-      headers: [
-        "User-Agent": "RapidAPIConnect_Elixir",
-        "Content-Type": "application/json"
-      ]
-    ]
+  Returns :ok
+  """
+  @spec call_async(String.t, String.t, pid(), map()) :: atom()
+  def call_async(pack, base, receiver_pid, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_pid(receiver_pid) and is_map(args) do
     
     base_url() <> "/connect/#{pack}/#{base}"
-    |> HTTPotion.post!(params)
+    |> HTTPotion.post!(get_params(args, receiver_pid))
 
-    receive do
-      %HTTPotion.AsyncChunk{chunk: new_data} -> IO.puts inspect new_data
-    end
     :ok
   end
-  
+
+  def async_worker(receiver_pid) when is_pid(receiver_pid) do
+    receive do
+      %HTTPotion.AsyncChunk{chunk: data} ->
+        decoded = 
+          data
+          |> Poison.decode
+          |> ok
+          |> Map.get("payload")
+        send(receiver_pid, decoded)
+    end
+  end
+
   defp get_vars do
     case token = Application.get_env(:rapid_api, :token) do
       nil -> raise "No API token defined in config"
@@ -59,8 +58,25 @@ defmodule RapidApi do
   defp get_params(args) do
     {token, project} = get_vars
     {:ok, encoded} = Poison.encode(args)
+
     [
       body: encoded,
+      basic_auth: {project, token},
+      headers: [
+        "User-Agent": "RapidAPIConnect_Elixir",
+        "Content-Type": "application/json"
+      ]
+    ]
+  end
+
+  defp get_params(args, receiver_pid) do
+    {token, project} = get_vars
+    {:ok, encoded} = Poison.encode(args)
+
+    worker_pid = spawn(__MODULE__, :async_worker, [receiver_pid])
+    [
+      body: encoded,
+      stream_to: worker_pid,
       basic_auth: {project, token},
       headers: [
         "User-Agent": "RapidAPIConnect_Elixir",

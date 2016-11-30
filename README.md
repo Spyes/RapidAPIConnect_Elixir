@@ -31,7 +31,7 @@ Easily connect to RapidAPI blocks from your Elixir application.
       
 ## Usage
 
-Connecting to RapidAPI is very simple. The following code makes a call to the getPictureOfTheDay function of the NasaAPI package, passing it the date parameter:
+Connecting to RapidAPI is very simple. The following code makes a synchronous call to the getPictureOfTheDay function of the NasaAPI package, passing it the date parameter:
 
 ```elixir
 RapidAPI.call("NasaAPI", "getPictureOfTheDay", %{date: "1997-07-01"})
@@ -39,7 +39,24 @@ RapidAPI.call("NasaAPI", "getPictureOfTheDay", %{date: "1997-07-01"})
     
 This will return a Map of the API response.
 
-Curently only synchronous calls are supported, but asynchronus calls will soon be implemented.
+To create an asynchronous call, you must first define a process that will receive the payload:
+
+```elixir
+receiver = fn ->
+    receive do
+        data -> IO.puts inspect data
+    end
+end
+receiver_pid = spawn(receiver)
+```
+
+Then use the `call_async` function, passing it the relevant information as well as the receiver process's pid:
+
+```elixir
+RapidApi.call_async "NasaAPI", "getPictureOfTheDay", receiver_pid, %{date: "1997-07-01"}
+```
+
+This will return `:ok` and once the request has returned, will send the data to the specified process.
 
 ## License
 
