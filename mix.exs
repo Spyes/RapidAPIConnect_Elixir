@@ -3,7 +3,7 @@ defmodule RapidApi.Mixfile do
 
   def project do
     [app: :rapid_api,
-     version: "0.1.2",
+     version: "1.0.0",
      elixir: "~> 1.3",
      description: description(),
      package: package(),
