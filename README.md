@@ -57,7 +57,7 @@ receiver_pid = spawn(receiver)
 Then use the `call_async` function, passing it the relevant information as well as the receiver process's pid:
 
 ```elixir
-RapidApi.call_async "NasaAPI", "getPictureOfTheDay", receiver_pid, %{date: "1997-07-01"}
+RapidApi.call_async("NasaAPI", "getPictureOfTheDay", receiver_pid, %{date: "1997-07-01"})
 ```
 
 This will return `:ok` and once the request has returned, will `send` the data to the specified process.
