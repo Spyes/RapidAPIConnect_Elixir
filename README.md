@@ -8,7 +8,7 @@ Easily connect to RapidAPI blocks from your Elixir application.
 
     ```elixir
     def deps do
-      [{:rapid_api, "~> 0.1.0"}]
+      [{:rapid_api, "~> 1.0.0"}]
     end
     ```
 
