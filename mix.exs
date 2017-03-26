@@ -11,12 +11,12 @@ defmodule RapidApi.Mixfile do
   end
 
   def application do
-    [applications: [:httpotion, :poison]]
+    [applications: [:httpoison, :poison]]
   end
 
   defp deps do
     [
-      {:httpotion, "~> 3.0.2"},
+      {:httpoison, "~> 0.10.0"},
       {:poison, "~> 3.0"},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]

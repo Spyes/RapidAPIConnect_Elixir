@@ -7,10 +7,22 @@ defmodule RapidApi do
   """
   @spec call(String.t, String.t, map()) :: map()
   def call(pack, base, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_map(args) do
-    base_url() <> "/connect/#{pack}/#{base}"
-    |> HTTPotion.post!(get_params(args))
-    |> Map.get(:body)
-    |> decode_response
+    {token, project} = get_vars()
+    encoded = Base.encode64("#{project}:#{token}")
+    headers = [
+      {"Authorization", "Basic #{encoded}"},
+      {"Content-Type", "application/json"},
+      {"User-Agent", "RapidAPIConnect_Elixir"}
+    ]
+    body = Poison.encode!(args)
+    url = base_url() <> "/connect/#{pack}/#{base}"
+
+    HTTPoison.post!(url, body, headers)
+    |> inspect
+    |> IO.puts
+    
+    # |> Map.get(:body)
+    # |> decode_response
   end
 
   @doc """
@@ -22,22 +34,22 @@ defmodule RapidApi do
   @spec call_async(String.t, String.t, pid(), map()) :: atom()
   def call_async(pack, base, receiver_pid, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_pid(receiver_pid) and is_map(args) do
     base_url() <> "/connect/#{pack}/#{base}"
-    |> HTTPotion.post!(get_params(args, receiver_pid))
+    |> HTTPoison.post!(get_params(args, receiver_pid))
     :ok
   end
 
   def async_worker(receiver_pid) when is_pid(receiver_pid) do
     receive do
-      %HTTPotion.AsyncChunk{chunk: data} ->
+      %HTTPoison.AsyncChunk{chunk: data} ->
         send(receiver_pid, decode_response(data))
     end
   end
 
   defp decode_response(data) do
-    data
-    |> Poison.decode
-    |> ok
-    |> Map.get("payload")    
+    case Poison.decode(data) do
+      {:ok, decoded} -> {:ok, Map.get(decoded, "payload")}
+      {:error, _} -> {:error, data}
+    end
   end
   
   defp get_vars do
@@ -55,7 +67,7 @@ defmodule RapidApi do
   defp base_url, do: Application.get_env(:rapid_api, :base_url, "https://rapidapi.io")
   
   defp get_params(args) do
-    {token, project} = get_vars
+    {token, project} = get_vars()
     {:ok, encoded} = Poison.encode(args)
 
     [
@@ -69,7 +81,7 @@ defmodule RapidApi do
   end
 
   defp get_params(args, receiver_pid) do
-    {token, project} = get_vars
+    {token, project} = get_vars()
     {:ok, encoded} = Poison.encode(args)
 
     worker_pid = spawn(__MODULE__, :async_worker, [receiver_pid])
@@ -83,7 +95,5 @@ defmodule RapidApi do
       ]
     ]
   end
-  
-  defp ok({:ok, resp}), do: resp
 
 end
