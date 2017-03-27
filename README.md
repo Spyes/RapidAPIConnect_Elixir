@@ -1,6 +1,9 @@
-# RapidApi
+<p align="center">
+  <img src="https://storage.googleapis.com/rapid_connect_static/static/github-header.png" width=350 />
+</p>
 
-Easily connect to RapidAPI blocks from your Elixir application.
+## Overview
+RapidAPI is the world's first opensource API marketplace. It allows developers to discover and connect to the world's top APIs more easily and manage multiple API connections in one place.
 
 ## Installation
 
@@ -74,9 +77,13 @@ def receiver do
   receiver
 end
 
-receiver_pid = spawn(receiver)
+receiver_pid = spawn(MyModule, :receiver, [])
 RapidApi.listen("Slack", "slashCommand", receiver_pid, %{"token" => "abc123", "command": "/command"})
 ```
+
+##Issues:
+
+As this is a pre-release version of the SDK, you may expirience bugs. Please report them in the issues section to let us know. You may use the intercom chat on rapidapi.com for support at any time.
 
 ## License
 
