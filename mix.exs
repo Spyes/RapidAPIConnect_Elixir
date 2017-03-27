@@ -18,8 +18,8 @@ defmodule RapidApi.Mixfile do
     [
       {:httpoison, "~> 0.10.0"},
       {:poison, "~> 3.0"},
-      {:phoenix_gen_socket_client, github: "aircloak/phoenix_gen_socket_client"},
-      {:websocket_client, github: "sanmiguel/websocket_client", tag: "1.1.0"},
+      {:phoenix_gen_socket_client, path: "./phoenix_gen_socket_client/"},
+      {:websocket_client, "~> 1.2.1"},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end

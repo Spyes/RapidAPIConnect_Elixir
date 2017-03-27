@@ -5,10 +5,10 @@ defmodule RapidApi do
 
   Returns {:ok, payload} or {:error, reason}.
   """
-  @spec call(String.t, String.t, list()) :: map()
-  def call(pack, base, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_list(args) do
+  @spec call(String.t, String.t, map()) :: map()
+  def call(pack, base, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_map(args) do
     base_url() <> "/connect/#{pack}/#{base}"
-    |> HTTPoison.post!({:form, args}, headers())
+    |> HTTPoison.post!({:form, Enum.into(args, [])}, headers())
     |> Map.get(:body)
     |> decode_response
   end
@@ -19,12 +19,12 @@ defmodule RapidApi do
 
   Returns :ok
   """
-  @spec call_async(String.t, String.t, pid(), list()) :: atom()
-  def call_async(pack, base, receiver_pid, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_pid(receiver_pid) and is_list(args) do
+  @spec call_async(String.t, String.t, pid(), map()) :: atom()
+  def call_async(pack, base, receiver_pid, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_pid(receiver_pid) and is_map(args) do
     worker = spawn(RapidApi, :async_worker, [receiver_pid])
 
     base_url() <> "/connect/#{pack}/#{base}"
-    |> HTTPoison.post!({:form, args}, headers(), stream_to: worker)
+    |> HTTPoison.post!({:form, Enum.into(args, [])}, headers(), stream_to: worker)
     :ok
   end
 
@@ -56,12 +56,7 @@ defmodule RapidApi do
   
   defp decode_response(data) do
     case Poison.decode(data) do
-      {:ok, decoded} ->
-        payload = Map.get(decoded, "payload", "")
-        case Poison.decode(payload) do
-          {:ok, pl} -> {:ok, pl}
-          {:error, _} -> {:ok, payload}
-        end
+      {:ok, decoded} -> {:ok, Map.get(decoded, "payload", "")}
       {:error, _} -> {:error, data}
     end
   end
