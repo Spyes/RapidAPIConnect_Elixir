@@ -5,7 +5,7 @@ defmodule RapidApi do
 
   Returns {:ok, payload} or {:error, reason}.
   """
-  @spec call(String.t, String.t, list()) :: list()
+  @spec call(String.t, String.t, list()) :: map()
   def call(pack, base, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_list(args) do
     base_url() <> "/connect/#{pack}/#{base}"
     |> HTTPoison.post!({:form, args}, headers())
@@ -38,10 +38,10 @@ defmodule RapidApi do
   @doc """
   Listens for real-time events by opening a websocket to RapidAPI.
 
-  Returns :ok
+  Returns {:ok, socket_pid}
   """
-  @spec listen(String.t, String.t, pid(), list()) :: atom()
-  def listen(pack, base, receiver_pid, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_pid(receiver_pid) and is_list(args) do
+  @spec listen(String.t, String.t, pid(), map()) :: atom()
+  def listen(pack, base, receiver_pid, args \\ %{}) when is_bitstring(pack) and is_bitstring(base) and is_pid(receiver_pid) and is_map(args) do
     {token, project} = get_vars()
     uid = "#{pack}.#{base}_#{project}:#{token}"
     token =
@@ -51,9 +51,7 @@ defmodule RapidApi do
       |> Poison.decode!
       |> Map.get("token")
 
-    {:ok, pid} = RapidApi.Listen.start_link(self(), websocket_url(token))
-    RapidApi.Listen.join(pid, "users_socket:#{token}", %{"token" => token})
-    :ok
+    {:ok, _socket} = RapidApi.Socket.start_link(token, receiver_pid, args)
   end
   
   defp decode_response(data) do
@@ -81,10 +79,7 @@ defmodule RapidApi do
   end
 
   defp base_url, do: "https://rapidapi.io"
-  #defp get_token_url(user_id), do: "https://webhooks.rapidapi.com/api/get_token?user_id=#{user_id}"
-  #defp websocket_url(token), do: "wss://webhooks.rapidapi.com/socket/websocket?token=#{token}"
-  defp get_token_url(user_id), do: "http://localhost:4000/api/get_token?user_id=#{user_id}"
-  defp websocket_url(token), do: "ws://localhost:4000/socket/websocket?token=#{token}"
+  defp get_token_url(user_id), do: "https://webhooks.rapidapi.com/api/get_token?user_id=#{user_id}"
 
   defp headers do
     {token, project} = get_vars()

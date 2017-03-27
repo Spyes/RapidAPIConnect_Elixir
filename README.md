@@ -62,6 +62,23 @@ RapidApi.call_async("NasaAPI", "getPictureOfTheDay", receiver_pid, %{date: "1997
 
 This will return `:ok` and once the request has returned, will `send` the data to the specified process.
 
+### Webhooks
+After setting up the webhook, you can listen to real-time events via websockets:
+
+```elixir
+def receiver do
+  receive do
+    :joined -> IO.puts "Joined!"
+    {:new_msg, msg} -> IO.puts inspect msg
+    {:error, reason} -> IO.puts inspect reason
+  end
+  receiver
+end
+
+receiver_pid = spawn(receiver)
+RapidApi.listen("Slack", "slashCommand", receiver_pid, %{"token" => "abc123", "command": "/command"})
+```
+
 ## License
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:

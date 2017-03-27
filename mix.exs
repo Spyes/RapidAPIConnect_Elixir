@@ -3,7 +3,7 @@ defmodule RapidApi.Mixfile do
 
   def project do
     [app: :rapid_api,
-     version: "1.0.1",
+     version: "1.0.2",
      elixir: "~> 1.3",
      description: description(),
      package: package(),
@@ -11,14 +11,15 @@ defmodule RapidApi.Mixfile do
   end
 
   def application do
-    [applications: [:httpoison, :poison, :websocket_client]]
+    [applications: [:httpoison, :poison, :phoenix_gen_socket_client, :websocket_client, :logger]]
   end
 
   defp deps do
     [
       {:httpoison, "~> 0.10.0"},
       {:poison, "~> 3.0"},
-      {:websocket_client, "~> 1.2"},
+      {:phoenix_gen_socket_client, github: "aircloak/phoenix_gen_socket_client"},
+      {:websocket_client, github: "sanmiguel/websocket_client", tag: "1.1.0"},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
