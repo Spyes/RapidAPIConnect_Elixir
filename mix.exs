@@ -11,13 +11,14 @@ defmodule RapidApi.Mixfile do
   end
 
   def application do
-    [applications: [:httpoison, :poison]]
+    [applications: [:httpoison, :poison, :websocket_client]]
   end
 
   defp deps do
     [
       {:httpoison, "~> 0.10.0"},
       {:poison, "~> 3.0"},
+      {:websocket_client, "~> 1.2"},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
