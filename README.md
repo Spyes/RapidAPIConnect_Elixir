@@ -8,7 +8,7 @@ Easily connect to RapidAPI blocks from your Elixir application.
 
     ```elixir
     def deps do
-      [{:rapid_api, "~> 1.0.1"}]
+      [{:rapid_api, github: "RapidAPI/RapidAPIConnect_Elixir"}]
     end
     ```
 
@@ -24,9 +24,8 @@ Easily connect to RapidAPI blocks from your Elixir application.
   
       ```elixir
       config :rapid_api,
-        base_url: "https://rapidapi.io", # optional - defaults to this URL
-        token: "your-rapid-api-token",
         project: "your-rapid-api-project"
+        key: "your-rapid-api-token",
       ```
       
 ## Usage
