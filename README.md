@@ -81,7 +81,7 @@ receiver_pid = spawn(MyModule, :receiver, [])
 RapidApi.listen("Slack", "slashCommand", receiver_pid, %{"token" => "abc123", "command": "/command"})
 ```
 
-##Issues:
+## Issues:
 
 As this is a pre-release version of the SDK, you may expirience bugs. Please report them in the issues section to let us know. You may use the intercom chat on rapidapi.com for support at any time.
 
