@@ -24,8 +24,8 @@ Easily connect to RapidAPI blocks from your Elixir application.
   
       ```elixir
       config :rapid_api,
-        project: "your-rapid-api-project"
-        key: "your-rapid-api-token",
+        project: "your-rapid-api-project",
+        key: "your-rapid-api-key"
       ```
       
 ## Usage
