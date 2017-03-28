@@ -11,7 +11,7 @@ RapidAPI is the world's first opensource API marketplace. It allows developers t
 
     ```elixir
     def deps do
-      [{:rapid_api, github: "RapidAPI/RapidAPIConnect_Elixir"}]
+      [{:rapid_api, github: "RapidAPI/rapidapi-elixir-sdk"}]
     end
     ```
 
