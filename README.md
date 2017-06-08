@@ -10,9 +10,9 @@ RapidAPI is the world's first opensource API marketplace. It allows developers t
   1. Add `rapid_api` to your list of dependencies in `mix.exs`:
 
         ```elixir
-            def deps do
-                [{:rapid_api, "~> 1.0.2"}]
-            end
+        def deps do
+            [{:rapid_api, "~> 1.0.2"}]
+        end
         ```
 
   2. Ensure `rapid_api` is started before your application:
