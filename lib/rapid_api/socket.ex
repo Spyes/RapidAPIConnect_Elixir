@@ -6,7 +6,7 @@ defmodule RapidApi.Socket do
     start = GenSocketClient.start_link(
       __MODULE__,
       Phoenix.Channels.GenSocketClient.Transport.WebSocketClient,
-      ["wss://webhooks.rapidapi.com/socket/websocket?token=#{token}", token, params, receiver_pid]
+      ["wss://webhooks.rapidapi.io/socket/websocket?token=#{token}", token, params, receiver_pid]
     )
   end
 

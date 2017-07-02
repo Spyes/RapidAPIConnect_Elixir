@@ -74,7 +74,7 @@ defmodule RapidApi do
   end
 
   defp base_url, do: "https://rapidapi.io"
-  defp get_token_url(user_id), do: "https://webhooks.rapidapi.com/api/get_token?user_id=#{user_id}"
+  defp get_token_url(user_id), do: "https://webhooks.rapidapi.io/api/get_token?user_id=#{user_id}"
 
   defp headers do
     {token, project} = get_vars()
